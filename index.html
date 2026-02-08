@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Fatigue Reducer - Smart Task Scheduler</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Decision Fatigue Reducer</h1>
+        <p class="subtitle">Smart task scheduling. Zero decision paralysis.</p>
+
+        <!-- SECTION 1: ADD TASK FORM -->
+        <div class="section add-task-section">
+            <h2>📋 Add a Task</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="taskName">Task Name</label>
+                    <input type="text" id="taskName" placeholder="e.g., Finish report">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskTime">Time (minutes)</label>
+                    <input type="number" id="taskTime" placeholder="45" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="taskPriority">Priority</label>
+                    <select id="taskPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDeadline">Deadline</label>
+                    <input type="datetime-local" id="taskDeadline">
+                </div>
+
+                <button id="addTaskBtn" class="btn btn-primary">+ Add Task</button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: TASK LIST -->
+        <div class="section task-list-section">
+            <h2>📝 Your Tasks</h2>
+            <div id="taskList" class="task-list">
+                <p class="empty-state">No tasks yet. Add one above!</p>
+            </div>
+        </div>
+
+        <!-- SECTION 3: DECISION ENGINE -->
+        <div class="section decision-section">
+            <h2>⚡ What Should I Do?</h2>
+            
+            <div class="decision-input">
+                <label for="availableTime">How many minutes do you have?</label>
+                <input type="number" id="availableTime" placeholder="30" min="1">
+                <button id="getSuggestionBtn" class="btn btn-primary">Get Suggestion</button>
+            </div>
+
+            <div id="suggestionBox" class="suggestion-box hidden">
+                <p class="suggestion-label">You should do:</p>
+                <div id="suggestionContent" class="suggestion-content">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <div class="suggestion-actions">
+                    <button id="finishedBtn" class="btn btn-success">✓ Finished</button>
+                    <button id="remainingTimeBtn" class="btn btn-secondary">⏱️ I have time left</button>
+                </div>
+
+                <div id="remainingTimeInput" class="remaining-time-input hidden">
+                    <label for="remainingMinutes">How many minutes remaining?</label>
+                    <input type="number" id="remainingMinutes" placeholder="15" min="1">
+                    <button id="nextSuggestionBtn" class="btn btn-primary">Get Next Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
