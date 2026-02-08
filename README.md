@@ -86,10 +86,6 @@ That's it.
 - ✅ **Zero Dependencies** — Pure HTML, CSS, JavaScript
 - ✅ **Persistent Storage** — Saves tasks to browser (localStorage)
 
-## 🎤 For Recruiters
-
-*"I built a smart task scheduler that eliminates decision fatigue in the workplace. The app combines cognitive psychology principles with algorithmic decision-making: it respects user constraints (available time + deadline urgency), applies priority logic, and delivers one actionable suggestion instead of overwhelming users with options. This demonstrates full-stack thinking: UX psychology + algorithm design + clean code architecture."*
-
 **Technical highlights:**
 - Task priority and deadline-based algorithm
 - Event-driven JavaScript with DOM manipulation
