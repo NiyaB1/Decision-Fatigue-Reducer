@@ -34,11 +34,13 @@ function addTask() {
         id: Date.now().toString(),
         name,
         remainingTime: time,
-        priority: taskPrioritySelect.value || "medium",
+        priority: taskPrioritySelect.value || null, // truly optional
         deadline: taskDeadlineInput.value || null,
         createdAt: Date.now(),
         isEditing: false
     };
+
+    task.priority = calculatePriority(task);
 
     tasks.push(task);
     saveTasks();
@@ -61,6 +63,9 @@ function renderTasks() {
     }
 
     tasks.forEach(task => {
+        // Auto-update priority on every render
+        task.priority = calculatePriority(task);
+
         const taskEl = document.createElement("div");
         taskEl.className = "task-item";
 
@@ -86,6 +91,7 @@ function renderTasks() {
                             task.isEditing
                                 ? `
                                 <select class="edit-priority">
+                                    <option value="">auto</option>
                                     <option value="high" ${task.priority === "high" ? "selected" : ""}>high</option>
                                     <option value="medium" ${task.priority === "medium" ? "selected" : ""}>medium</option>
                                     <option value="low" ${task.priority === "low" ? "selected" : ""}>low</option>
@@ -124,55 +130,50 @@ function renderTasks() {
         `;
 
         // DELETE
-        const deleteBtn = taskEl.querySelector(".btn-delete");
-        if (deleteBtn) {
-            deleteBtn.addEventListener("click", () => deleteTask(task.id));
-        }
+        taskEl.querySelector(".btn-delete")?.addEventListener("click", () => {
+            deleteTask(task.id);
+        });
 
         // EDIT
-        const editBtn = taskEl.querySelector(".edit-btn");
-        if (editBtn) {
-            editBtn.addEventListener("click", () => {
-                task.isEditing = true;
-                renderTasks();
-            });
-        }
+        taskEl.querySelector(".edit-btn")?.addEventListener("click", () => {
+            task.isEditing = true;
+            renderTasks();
+        });
 
         // SAVE
-        const saveBtn = taskEl.querySelector(".save-btn");
-        if (saveBtn) {
-            saveBtn.addEventListener("click", () => {
-                task.name = taskEl.querySelector(".edit-name").value.trim();
-                task.remainingTime = parseInt(taskEl.querySelector(".edit-time").value, 10);
-                task.priority = taskEl.querySelector(".edit-priority").value;
+        taskEl.querySelector(".save-btn")?.addEventListener("click", () => {
+            task.name = taskEl.querySelector(".edit-name").value.trim();
+            task.remainingTime = parseInt(taskEl.querySelector(".edit-time").value, 10);
 
-                const newDeadline = taskEl.querySelector(".edit-deadline").value;
-                task.deadline = newDeadline || null;
+            const selectedPriority = taskEl.querySelector(".edit-priority").value;
+            task.priority = selectedPriority || null;
 
-                task.isEditing = false;
+            const newDeadline = taskEl.querySelector(".edit-deadline").value;
+            task.deadline = newDeadline || null;
 
-                saveTasks();
-                renderTasks();
-            });
-        }
+            task.priority = calculatePriority(task);
+
+            task.isEditing = false;
+            saveTasks();
+            renderTasks();
+        });
 
         // CANCEL
-        const cancelBtn = taskEl.querySelector(".cancel-btn");
-        if (cancelBtn) {
-            cancelBtn.addEventListener("click", () => {
-                task.isEditing = false;
-                renderTasks();
-            });
-        }
+        taskEl.querySelector(".cancel-btn")?.addEventListener("click", () => {
+            task.isEditing = false;
+            renderTasks();
+        });
 
         taskListEl.appendChild(taskEl);
     });
+
+    saveTasks();
 }
 
 function resetForm() {
     taskNameInput.value = "";
     taskTimeInput.value = "";
-    taskPrioritySelect.value = "medium";
+    taskPrioritySelect.value = ""; // 👈 auto / none
     taskDeadlineInput.value = "";
 }
 
@@ -188,6 +189,24 @@ function loadTasks() {
 
 // ---------- HELPERS ----------
 function formatDeadline(deadlineStr) {
-    const date = new Date(deadlineStr);
-    return date.toLocaleString();
+    return new Date(deadlineStr).toLocaleString();
+}
+
+// ---------- PRIORITY ENGINE ----------
+function calculatePriority(task) {
+    if (!task.deadline && !task.priority) {
+        return "low";
+    }
+
+    if (task.deadline) {
+        const now = new Date();
+        const deadline = new Date(task.deadline);
+        const diffDays = (deadline - now) / (1000 * 60 * 60 * 24);
+
+        if (diffDays <= 1) return "high";
+        if (diffDays <= 3) return "medium";
+        return "low";
+    }
+
+    return task.priority || "low";
 }
